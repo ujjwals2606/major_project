@@ -29,6 +29,17 @@ app.get('/api/health', (req, res) => {
   res.json({ message: 'Creator-Mitra API is running!' });
 });
 
+
+// Mock user profile endpoint<<<<<
+app.get("/api/user/profile", (req, res) => {
+  res.json({
+    name: "Ujjwal Singh",
+    email: "theujjwalsingh2606@gmail.com"
+  });
+});
+
+
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);

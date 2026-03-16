@@ -60,7 +60,7 @@ const Navbar = () => {
                   to="/register"
                   className="btn-primary"
                 >
-                  Get Started
+                  Sign Up
                 </Link>
               </div>
             )}

@@ -115,7 +115,7 @@ const Home = () => {
                 to="/register"
                 className="btn-primary text-lg px-8 py-3 inline-flex items-center justify-center"
               >
-                Get Started Free
+                Sign Up
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
               <Link
