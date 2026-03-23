@@ -146,26 +146,6 @@ const YouTubeAnalytics = () => {
         <p className="text-gray-600">{channelData?.description}</p>
       </div>
 
- <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.1 }}
-        className="card bg-gradient-to-r from-pink-50 to-purple-50 border-pink-200"
-      >
-        <div className="flex items-center space-x-4">
-          <div className="w-16 h-16 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center">
-            <Youtube className="w-8 h-8 text-white" />
-          </div>
-          <div className="flex-1">
-            <h2 className="text-2xl font-bold text-gray-900">@{channelData?.name}</h2>
-            <p className="text-gray-600 capitalize">{channelData?.description}</p>
-          </div>
-          <div className="text-right">
-            <p className="text-3xl font-bold text-gray-900">{formatNumber(channelData?.subscribers)}</p>
-            <p className="text-gray-600">subscribers</p>
-          </div>
-        </div>
-      </motion.div>
       {/* STATS */}
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
