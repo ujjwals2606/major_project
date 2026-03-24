@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { StatCard, ChartCard } from "../components/Card";
-import { LineChart, BarChart } from "../components/Chart";
+import { BarChart } from "../components/Chart";
 import {
   Users,
   Eye,
@@ -35,9 +35,9 @@ const YouTubeAnalytics = () => {
         return;
       }
 
-      // CHANNEL DATA
+      // ✅ CHANNEL DATA
       const channelRes = await fetch(
-        "https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&mine=true",
+        "https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics,contentDetails&mine=true",
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -45,6 +45,9 @@ const YouTubeAnalytics = () => {
 
       const channelJson = await channelRes.json();
       const channel = channelJson.items[0];
+
+      const uploadsPlaylistId =
+        channel.contentDetails.relatedPlaylists.uploads;
 
       setChannelData({
         name: channel.snippet.title,
@@ -54,9 +57,9 @@ const YouTubeAnalytics = () => {
         videos: channel.statistics.videoCount
       });
 
-      // GET VIDEOS
+      // ✅ GET VIDEOS FROM UPLOADS PLAYLIST
       const videoRes = await fetch(
-        "https://www.googleapis.com/youtube/v3/search?part=snippet&mine=true&type=video&maxResults=10",
+        `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsPlaylistId}&maxResults=10`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -64,9 +67,11 @@ const YouTubeAnalytics = () => {
 
       const videoJson = await videoRes.json();
 
-      const videoIds = videoJson.items.map(v => v.id.videoId).join(",");
+      const videoIds = videoJson.items
+        .map(v => v.snippet.resourceId.videoId)
+        .join(",");
 
-      // GET VIDEO STATS
+      // ✅ VIDEO STATS
       const statsRes = await fetch(
         `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoIds}`,
         {
@@ -81,24 +86,41 @@ const YouTubeAnalytics = () => {
         const stats = statsJson.items[index]?.statistics;
 
         return {
-          id: v.id.videoId,
+          id: v.snippet.resourceId.videoId,
           title: v.snippet.title,
           thumbnail: v.snippet.thumbnails.medium.url,
           publishedAt: v.snippet.publishedAt,
-          views: stats?.viewCount || 0,
-          likes: stats?.likeCount || 0,
-          comments: stats?.commentCount || 0
+          views: Number(stats?.viewCount || 0),
+          likes: Number(stats?.likeCount || 0),
+          comments: Number(stats?.commentCount || 0)
         };
 
       });
 
       setVideos(videoList);
 
-      // CHART DATA (last 5 videos views)
-      const chart = videoList.slice(0,5).map((v,i)=>({
-        name:`Video ${i+1}`,
-        views:Number(v.views)
-      }));
+      // ✅ 🔥 3-BAR CHART DATA
+      const chart = videoList.slice(0, 5).map((v, i) => {
+
+        const views = v.views;
+        const likes = v.likes;
+        const comments = v.comments;
+
+        // 🔥 Overall score
+        const overall = views + (likes * 10) + (comments * 20);
+
+        // 🔥 Watch time (estimated)
+        const avgWatchMinutes = 3;
+        const watchTime = views * avgWatchMinutes;
+
+        return {
+          name: `Video ${i + 1}`,
+          views,
+          overall,
+          watchTime
+        };
+
+      });
 
       setChartData(chart);
 
@@ -119,55 +141,58 @@ const YouTubeAnalytics = () => {
 
     const number = Number(num);
 
-    if (number >= 1000000) return (number/1000000).toFixed(1)+"M";
-    if (number >= 1000) return (number/1000).toFixed(1)+"K";
+    if (number >= 1000000) return (number / 1000000).toFixed(1) + "M";
+    if (number >= 1000) return (number / 1000).toFixed(1) + "K";
 
     return number;
 
   };
 
   if (loading) {
-
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
       </div>
     );
-
   }
 
   return (
     <div className="p-6 space-y-6">
 
       {/* HEADER */}
-
       <div>
         <h1 className="text-3xl font-bold">YouTube Analytics</h1>
         <p className="text-gray-600">{channelData?.description}</p>
       </div>
 
- <motion.div
+      {/* 🔴 CHANNEL CARD */}
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.1 }}
-        className="card bg-gradient-to-r from-pink-50 to-purple-50 border-pink-200"
+        className="card bg-gradient-to-r from-red-50 to-orange-50 border-red-200"
       >
         <div className="flex items-center space-x-4">
-          <div className="w-16 h-16 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center">
+
+          <div className="w-16 h-16 bg-gradient-to-r from-red-600 to-orange-500 rounded-full flex items-center justify-center">
             <Youtube className="w-8 h-8 text-white" />
           </div>
+
           <div className="flex-1">
-            <h2 className="text-2xl font-bold text-gray-900">@{channelData?.name}</h2>
-            <p className="text-gray-600 capitalize">{channelData?.description}</p>
+            <h2 className="text-2xl font-bold">@{channelData?.name}</h2>
+            <p className="text-gray-600">{channelData?.description}</p>
           </div>
+
           <div className="text-right">
-            <p className="text-3xl font-bold text-gray-900">{formatNumber(channelData?.subscribers)}</p>
+            <p className="text-3xl font-bold">
+              {formatNumber(channelData?.subscribers)}
+            </p>
             <p className="text-gray-600">subscribers</p>
           </div>
+
         </div>
       </motion.div>
-      {/* STATS */}
 
+      {/* STATS */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
 
         <StatCard
@@ -200,29 +225,30 @@ const YouTubeAnalytics = () => {
 
       </div>
 
-      {/* CHART */}
-
-      <ChartCard title="Recent Video Performance">
+      {/* 🔥 3 BAR CHART */}
+      <ChartCard title="Video Performance Overview">
 
         <BarChart
           data={chartData}
-          dataKey="views"
-          color="#ef4444"
+          bars={[
+            { key: "overall", color: "#f97316" },   // orange
+            { key: "views", color: "#ef4444" },     // red
+            { key: "watchTime", color: "#fb923c" }  // light orange
+          ]}
         />
 
       </ChartCard>
 
-      {/* LATEST VIDEOS */}
-
+      {/* VIDEOS */}
       <ChartCard title="Latest Uploaded Videos">
 
         <div className="space-y-4">
 
-          {videos.map((video)=>(
+          {videos.map((video) => (
 
             <div
               key={video.id}
-              className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg"
+              className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg hover:shadow-md transition"
             >
 
               <img

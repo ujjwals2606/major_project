@@ -31,12 +31,6 @@ app.get('/api/health', (req, res) => {
 
 
 // Mock user profile endpoint<<<<<
-app.get("/api/user/profile", (req, res) => {
-  res.json({
-    name: "Ujjwal Singh",
-    email: "theujjwalsingh2606@gmail.com"
-  });
-});
 
 
 
