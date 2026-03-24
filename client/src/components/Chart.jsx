@@ -11,80 +11,107 @@ import {
   Bar,
 } from "recharts";
 
-/* ---------------------- COMMON CHART WRAPPER ---------------------- */
+/* ---------------------- LINE CHART ---------------------- */
 
-const ChartWrapper = ({ title, children }) => (
-  <div className="w-full bg-white shadow-md rounded-lg p-4 mb-5">
-    <h2 className="text-lg font-semibold mb-4">{title}</h2>
-    <div className="w-full h-64">{children}</div>
-  </div>
-);
+export const LineChart = ({ data = [], lines = [] }) => {
+  if (!data.length) {
+    return (
+      <div className="flex items-center justify-center h-[300px] text-gray-400">
+        No data available
+      </div>
+    );
+  }
 
-/* ---------------------- LINE CHART COMPONENT ---------------------- */
-
-const LineChartComponent = ({ data, dataKeyX, dataKeyY }) => (
-  <ChartWrapper title="Line Chart">
-    <ResponsiveContainer width="100%" height="100%">
+  return (
+    <ResponsiveContainer width="100%" height={300}>
       <ReLineChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey={dataKeyX} />
-        <YAxis />
-        <Tooltip />
-        <Line type="monotone" dataKey={dataKeyY} stroke="#4f46e5" strokeWidth={3} />
-      </ReLineChart>
-    </ResponsiveContainer>
-  </ChartWrapper>
-);
-
-/* ---------------------- BAR CHART COMPONENT ---------------------- */
-
-const BarChartComponent = ({ data, dataKeyX, dataKeyY }) => (
-  <ChartWrapper title="Bar Chart">
-    <ResponsiveContainer width="100%" height="100%">
-      <ReBarChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey={dataKeyX} />
-        <YAxis />
-        <Tooltip />
-        <Bar dataKey={dataKeyY} fill="#4f46e5" />
-      </ReBarChart>
-    </ResponsiveContainer>
-  </ChartWrapper>
-);
-
-/* ---------------------- MULTI-LINE CHART COMPONENT ---------------------- */
-
-const MultiLineChartComponent = ({ data, lines, dataKeyX }) => (
-  <ChartWrapper title="Multi Line Chart">
-    <ResponsiveContainer width="100%" height="100%">
-      <ReLineChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey={dataKeyX} />
+        <XAxis dataKey="name" />
         <YAxis />
         <Tooltip />
 
-        {lines.map((line) => (
+        {lines?.map((line, index) => (
           <Line
-            key={line.dataKey}
-            type="monotone"
-            dataKey={line.dataKey}
+            key={index}
+            type="monotone" // 🔥 curved line
+            dataKey={line.key}
             stroke={line.color}
             strokeWidth={3}
+            dot={{ r: 3 }}
+            activeDot={{ r: 6 }}
+            animationDuration={800}
           />
         ))}
       </ReLineChart>
     </ResponsiveContainer>
-  </ChartWrapper>
-);
+  );
+};
 
-/* ---------------------- EXPORTS ---------------------- */
+/* ---------------------- BAR CHART ---------------------- */
 
-export const LineChart = LineChartComponent;
-export const BarChart = BarChartComponent;
-export const MultiLineChart = MultiLineChartComponent;
+export const BarChart = ({ data = [], bars = [] }) => {
+  if (!data.length) {
+    return (
+      <div className="flex items-center justify-center h-[300px] text-gray-400">
+        No data available
+      </div>
+    );
+  }
 
-export default {
-  LineChart,
-  BarChart,
-  MultiLineChart,
+  return (
+    <ResponsiveContainer width="100%" height={300}>
+      <ReBarChart data={data}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="name" />
+        <YAxis />
+        <Tooltip />
+
+        {bars?.map((bar, index) => (
+          <Bar
+            key={index}
+            dataKey={bar.key}
+            fill={bar.color}
+            radius={[6, 6, 0, 0]} // 🔥 rounded bars
+            animationDuration={800}
+          />
+        ))}
+      </ReBarChart>
+    </ResponsiveContainer>
+  );
+};
+
+/* ---------------------- MULTI LINE CHART ---------------------- */
+
+export const MultiLineChart = ({ data = [], lines = [] }) => {
+  if (!data.length) {
+    return (
+      <div className="flex items-center justify-center h-[300px] text-gray-400">
+        No data available
+      </div>
+    );
+  }
+
+  return (
+    <ResponsiveContainer width="100%" height={300}>
+      <ReLineChart data={data}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="name" />
+        <YAxis />
+        <Tooltip />
+
+        {lines?.map((line, index) => (
+          <Line
+            key={index}
+            type="monotone"
+            dataKey={line.key}
+            stroke={line.color}
+            strokeWidth={3}
+            dot={{ r: 3 }}
+            activeDot={{ r: 6 }}
+            animationDuration={800}
+          />
+        ))}
+      </ReLineChart>
+    </ResponsiveContainer>
+  );
 };
