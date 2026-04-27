@@ -9,6 +9,8 @@ import {
   ResponsiveContainer,
   BarChart as ReBarChart,
   Bar,
+  AreaChart as ReAreaChart,
+  Area,
 } from "recharts";
 
 /* ---------------------- LINE CHART ---------------------- */
@@ -30,19 +32,58 @@ export const LineChart = ({ data = [], lines = [] }) => {
         <YAxis />
         <Tooltip />
 
-        {lines?.map((line, index) => (
+        {lines.map((line, index) => (
           <Line
             key={index}
-            type="monotone" // 🔥 curved line
+            type="monotone"
             dataKey={line.key}
             stroke={line.color}
             strokeWidth={3}
             dot={{ r: 3 }}
-            activeDot={{ r: 6 }}
-            animationDuration={800}
           />
         ))}
       </ReLineChart>
+    </ResponsiveContainer>
+  );
+};
+
+/* ---------------------- AREA CHART ---------------------- */
+
+export const AreaChart = ({ data = [], areas = [] }) => {
+  if (!data.length) {
+    return (
+      <div className="flex items-center justify-center h-[300px] text-gray-400">
+        No data available
+      </div>
+    );
+  }
+
+  return (
+    <ResponsiveContainer width="100%" height={300}>
+      <ReAreaChart data={data}>
+        <defs>
+          <linearGradient id="colorOne" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="#6366F1" stopOpacity={0.8}/>
+            <stop offset="95%" stopColor="#6366F1" stopOpacity={0}/>
+          </linearGradient>
+        </defs>
+
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="name" />
+        <YAxis />
+        <Tooltip />
+
+        {areas.map((area, index) => (
+          <Area
+            key={index}
+            type="monotone"
+            dataKey={area.key}
+            stroke={area.color}
+            fillOpacity={1}
+            fill="url(#colorOne)"
+          />
+        ))}
+      </ReAreaChart>
     </ResponsiveContainer>
   );
 };
@@ -66,13 +107,12 @@ export const BarChart = ({ data = [], bars = [] }) => {
         <YAxis />
         <Tooltip />
 
-        {bars?.map((bar, index) => (
+        {bars.map((bar, index) => (
           <Bar
             key={index}
             dataKey={bar.key}
             fill={bar.color}
-            radius={[6, 6, 0, 0]} // 🔥 rounded bars
-            animationDuration={800}
+            radius={[6, 6, 0, 0]}
           />
         ))}
       </ReBarChart>
@@ -83,35 +123,5 @@ export const BarChart = ({ data = [], bars = [] }) => {
 /* ---------------------- MULTI LINE CHART ---------------------- */
 
 export const MultiLineChart = ({ data = [], lines = [] }) => {
-  if (!data.length) {
-    return (
-      <div className="flex items-center justify-center h-[300px] text-gray-400">
-        No data available
-      </div>
-    );
-  }
-
-  return (
-    <ResponsiveContainer width="100%" height={300}>
-      <ReLineChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
-        <YAxis />
-        <Tooltip />
-
-        {lines?.map((line, index) => (
-          <Line
-            key={index}
-            type="monotone"
-            dataKey={line.key}
-            stroke={line.color}
-            strokeWidth={3}
-            dot={{ r: 3 }}
-            activeDot={{ r: 6 }}
-            animationDuration={800}
-          />
-        ))}
-      </ReLineChart>
-    </ResponsiveContainer>
-  );
+  return <LineChart data={data} lines={lines} />;
 };

@@ -23,6 +23,8 @@ app.use(cookieParser());
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/youtube', require('./routes/youtubeRoutes'));
 app.use('/api/instagram', require('./routes/instagramRoutes'));
+;
+// app.use("/api/youtube", require("./routes/youtube"));
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -31,6 +33,10 @@ app.get('/api/health', (req, res) => {
 
 
 // Mock user profile endpoint<<<<<
+
+
+
+// 
 
 
 

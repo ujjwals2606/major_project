@@ -226,6 +226,9 @@ const PublicLayout = ({ children }) => {
   );
 };
 
+
+
+
 function App() {
   return (
     <AuthProvider>
@@ -243,6 +246,7 @@ function App() {
           <Route path="/auth/youtube/callback" element={<YoutubeCallback />} />
 
           {/* DASHBOARD */}
+          {/* import Dashboard from './pages/Dashboard'; */}
           <Route
             path="/dashboard"
             element={
